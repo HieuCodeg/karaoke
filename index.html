@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nguyen Minh Hieu</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="body__cover">
+        <img src="Fullmoon night live wallpaper.gif" alt="Album cover" />  
+           
+      </div>
+    <div class="content">
+        <div class="lyrics"></div>
+    </div>
+    
+    <div class="player">
+        <!-- <video controls="" _autoplay="" name="media"><source src="beat.mp3" type="audio/mpeg"></video> -->
+        <div id="audio-player-container">
+            <audio src="beat.mp3" preload="metadata" name="media"></audio>
+            <p>Music player</p>
+            <button id="play-icon"></button>
+            <span id="current-time" class="time">0:00</span>
+            <input type="range" id="seek-slider" max="100" value="0">
+            <span id="duration" class="time">0:00</span>
+            <output id="volume-output">100</output>
+            <input type="range" id="volume-slider" max="100" value="100">
+            <button id="mute-icon"></button>
+        </div>
+    </div>
+  
+    <script type="module" src="index.js"></script>
+</body>
+</html>
