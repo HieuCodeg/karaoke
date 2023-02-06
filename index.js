@@ -1051,7 +1051,7 @@ function generate() {
 
 
 /** Implementation of the presentation of the audio player */
-// import lottieWeb from 'https://cdn.skypack.dev/lottie-web';
+import lottieWeb from 'https://cdn.skypack.dev/lottie-web';
 
 // const playIconContainer = document.getElementById('play-icon');
 // const audioPlayerContainer = document.getElementById('audio-player-container');
