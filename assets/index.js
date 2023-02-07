@@ -1,6 +1,17 @@
 console.clear();
+let list = [];
+function readTextFile(xmlUrl, callback) {
+    $.ajax({
+        type: 'GET',
+        url: xmlUrl,
+    }).done((data) => {
+        callback(data);
+    });
+}
+let xmlUrl = 'https://storage.googleapis.com/ikara-storage/ikara/lyrics.xml';
+
 var _data = JSON.parse(
-   `{
+    `{
     "lyrics": [
         [
             {
@@ -931,264 +942,295 @@ var _data = JSON.parse(
     ]
 }`
 );
-var currentLine = "";
-var currentWord = "";
+
+// var _data = {
+//     lyrics: list
+// }
+
+var currentLine = '';
+var currentWord = '';
 let checkWord = true;
 
 function align() {
-   var a = $(".highlighted").height();
-   var c = $(".content").height();
-   var d =
-      $(".highlighted").offset().top - $(".highlighted").parent().offset().top;
-   var e = d + a / 2 - c / 2;
-   $(".content").animate(
-      { scrollTop: e + "px" },
-      { easing: "swing", duration: 250 }
-   );
+    var a = $('.highlighted').height();
+    var c = $('.content').height();
+    var d = $('.highlighted').offset().top - $('.highlighted').parent().offset().top;
+    var e = d + a / 2 - c / 2;
+    $('.content').animate({ scrollTop: e + 'px' }, { easing: 'swing', duration: 250 });
 }
 
-var lyricHeight = $(".lyrics").height();
-$(window).on("resize", function () {
-   if ($(".lyrics").height() != lyricHeight) {
-      //Either width changes so that a line may take up or use less vertical space or the window height changes, 2 in 1
-      lyricHeight = $(".lyrics").height();
-      align();
-   }
+var lyricHeight = $('.lyrics').height();
+$(window).on('resize', function () {
+    if ($('.lyrics').height() != lyricHeight) {
+        lyricHeight = $('.lyrics').height();
+        align();
+    }
 });
 
 $(document).ready(function () {
-   $("audio").on("timeupdate", function (e) {
-       var time = this.currentTime * 1000;
-       var past = _data["lyrics"].filter(function (item) {
-         return item[0].time < time;
-      });
-      if (_data["lyrics"][past.length] != currentLine) {
-         currentLine = _data["lyrics"][past.length];
-         $(".lyrics div").removeClass("highlighted");
-         $(`.lyrics div:nth-child(${past.length})`).addClass("highlighted"); 
-         $(".lyrics div span").removeClass("runText");
-         $(".lyrics div span").removeClass("runText2");
-         $(".lyrics div span").removeClass("green");
-         $(`.lyrics div:nth-child(${past.length}) span:nth-child(1)`).addClass("runText"); 
-        
-        let time1; 
-        if (past[past.length -1 ].length === 1) {
-            time1 = 500;
-        } else {
-            time1 = past[past.length -1 ][1].time - past[past.length -1 ][0].time
-        }
-        const element = document.querySelector('.runText')
-
-        element.style.setProperty('--timeConsum',`run-text ${time1/1000}s forwards linear`)
-        checkWord = true;
-         align();
-      } else {
-        const element = document.querySelector('.runText');
-        var row = past[past.length -1 ].filter(function (item) {
-            return item.time < time;
+    $('audio').on('timeupdate', function (e) {
+        var time = this.currentTime * 1000;
+        var past = list.filter(function (item) {
+            return item[0].time < time;
         });
-        if (row[row.length - 1] != currentWord) {
-          
-            currentWord = row[row.length - 1];
-            for (let i = 1; i < row.length; i++) {
-                $(`.lyrics div:nth-child(${past.length}) span:nth-child(${i})`).addClass("green"); 
-            }
-            // $(`.lyrics div:nth-child(${past.length}) span:nth-child(${row.length - 1})`).addClass("green"); 
-            if (checkWord) {
-                $(`.lyrics div:nth-child(${past.length}) span:nth-child(${row.length})`).addClass("runText"); 
-          
-                let time2;
-                if (row.length === 1 || past[past.length -1 ].length === row.length) {
-                    time2 = 500;
-                } else {
-                    time2 = past[past.length -1 ][row.length - 1].time - past[past.length -1 ][row.length - 2].time
-                }
-                element.style.setProperty('--timeConsum',`run-text ${time2/1000}s forwards linear`)
-                checkWord = false;
+        if (list[past.length] != currentLine) {
+            currentLine = list[past.length];
+            $('.lyrics div').removeClass('highlighted');
+            $(`.lyrics div:nth-child(${past.length})`).addClass('highlighted');
+            $('.lyrics div span').removeClass('runText');
+            $('.lyrics div span').removeClass('runText2');
+            $('.lyrics div span').removeClass('green');
+            $(`.lyrics div:nth-child(${past.length}) span:nth-child(1)`).addClass('runText');
+
+            let time1;
+            if (past[past.length - 1].length === 1) {
+                time1 = 500;
             } else {
-                $(`.lyrics div:nth-child(${past.length}) span:nth-child(${row.length})`).addClass("runText2"); 
-          
-                let time3;
-                if (row.length === 1 || past[past.length -1 ].length === row.length) {
-                    time3 = 500;
-                } else {
-                    time3 = past[past.length -1 ][row.length - 1].time - past[past.length -1 ][row.length - 2].time
-                }
-                element.style.setProperty('--timeConsum2',`run-text ${time3/1000}s forwards linear`)
-                checkWord = true;
+                time1 = past[past.length - 1][1].time - past[past.length - 1][0].time;
             }
-            
-           
+            const element = document.querySelector('.runText');
+
+            element.style.setProperty('--timeConsum', `run-text ${time1 / 1000}s forwards linear`);
+            checkWord = true;
+            align();
+        } else {
+            const element = document.querySelector('.runText');
+            var row = past[past.length - 1].filter(function (item) {
+                return item.time < time;
+            });
+            if (row[row.length - 1] != currentWord) {
+                currentWord = row[row.length - 1];
+                for (let i = 1; i < row.length; i++) {
+                    $(`.lyrics div:nth-child(${past.length}) span:nth-child(${i})`).addClass('green');
+                }
+
+                if (checkWord) {
+                    $(`.lyrics div:nth-child(${past.length}) span:nth-child(${row.length})`).addClass('runText');
+
+                    let time2;
+                    if (row.length === 1 || past[past.length - 1].length === row.length) {
+                        time2 = 500;
+                    } else {
+                        time2 = past[past.length - 1][row.length - 1].time - past[past.length - 1][row.length - 2].time;
+                    }
+                    element.style.setProperty('--timeConsum', `run-text ${time2 / 1000}s forwards linear`);
+                    checkWord = false;
+                } else {
+                    $(`.lyrics div:nth-child(${past.length}) span:nth-child(${row.length})`).addClass('runText2');
+
+                    let time3;
+                    if (row.length === 1 || past[past.length - 1].length === row.length) {
+                        time3 = 500;
+                    } else {
+                        time3 = past[past.length - 1][row.length - 1].time - past[past.length - 1][row.length - 2].time;
+                    }
+                    element.style.setProperty('--timeConsum2', `run-text ${time3 / 1000}s forwards linear`);
+                    checkWord = true;
+                }
+            }
         }
-      }
-   });
+    });
 });
 
 generate();
 
 function generate() {
-   var html = "";
-   for (var i = 0; i < _data["lyrics"].length; i++) {
-      html += "<div";
-      if (i == 0) {
-         html += ` class="highlighted"`;
-         currentLine = 0;
-      }
-      html += ">";
-      for (let j = 0; j < _data["lyrics"][i].length; j++) {
-          html += " <span "
-          html += ` data-text="${_data["lyrics"][i][j]["line"]}" >`;
-        html +=
-        _data["lyrics"][i][j]["line"] == "" ? "•" : _data["lyrics"][i][j]["line"];
-        html += " </span>"
+    readTextFile(xmlUrl, function (text) {
+        $.data = $(text).find('param');
 
-      }
-      html += "</div>";
-   }
-   $(".lyrics").html(html);
-   align();
+        $.data.each(function (index, element) {
+            let arr = [];
+            let txt = '';
+            let x = element.getElementsByTagName('i');
+
+            for (let i = 0; i < x.length; i++) {
+                let obj = {
+                    line: x[i].childNodes[0].nodeValue,
+                    time: Number(x[i].getAttribute('va')) * 1000,
+                };
+                arr.push(obj);
+            }
+            list.push(arr);
+        });
+        let time = list[0][0].time;
+
+        list.unshift([
+            {
+                line: '3  ',
+                time: time - 3000,
+            },
+            {
+                line: '2  ',
+                time: time - 2000,
+            },
+            {
+                line: '1',
+                time: time - 1000,
+            },
+        ]);
+        list.unshift([{ line: '', time: -1 }]);
+
+        var html = '';
+        for (var i = 0; i < list.length; i++) {
+            html += '<div';
+            if (i == 0) {
+                html += ` class="highlighted"`;
+                currentLine = 0;
+            }
+            html += '>';
+            for (let j = 0; j < list[i].length; j++) {
+                html += ' <span ';
+                html += ` data-text="${list[i][j]['line']}" >`;
+                html += list[i][j]['line'] == '' ? '•' : list[i][j]['line'];
+                html += ' </span>';
+            }
+            html += '</div>';
+        }
+        $('.lyrics').html(html);
+        align();
+    });
 }
 
-
 /** Implementation of the presentation of the audio player */
-// import lottieWeb from 'https://cdn.skypack.dev/lottie-web';
+import lottieWeb from 'https://cdn.skypack.dev/lottie-web';
 
-// const playIconContainer = document.getElementById('play-icon');
-// const audioPlayerContainer = document.getElementById('audio-player-container');
-// const seekSlider = document.getElementById('seek-slider');
-// const volumeSlider = document.getElementById('volume-slider');
-// const muteIconContainer = document.getElementById('mute-icon');
-// let playState = 'play';
-// let muteState = 'unmute';
+const playIconContainer = document.getElementById('play-icon');
+const audioPlayerContainer = document.getElementById('audio-player-container');
+const seekSlider = document.getElementById('seek-slider');
+const volumeSlider = document.getElementById('volume-slider');
+const muteIconContainer = document.getElementById('mute-icon');
+let playState = 'play';
+let muteState = 'unmute';
 
-// const playAnimation = lottieWeb.loadAnimation({
-//   container: playIconContainer,
-//   path: 'https://maxst.icons8.com/vue-static/landings/animated-icons/icons/pause/pause.json',
-//   renderer: 'svg',
-//   loop: false,
-//   autoplay: false,
-//   name: "Play Animation",
-// });
+const playAnimation = lottieWeb.loadAnimation({
+    container: playIconContainer,
+    path: 'https://maxst.icons8.com/vue-static/landings/animated-icons/icons/pause/pause.json',
+    renderer: 'svg',
+    loop: false,
+    autoplay: false,
+    name: 'Play Animation',
+});
 
-// const muteAnimation = lottieWeb.loadAnimation({
-//     container: muteIconContainer,
-//     path: 'https://maxst.icons8.com/vue-static/landings/animated-icons/icons/mute/mute.json',
-//     renderer: 'svg',
-//     loop: false,
-//     autoplay: false,
-//     name: "Mute Animation",
-// });
+const muteAnimation = lottieWeb.loadAnimation({
+    container: muteIconContainer,
+    path: 'https://maxst.icons8.com/vue-static/landings/animated-icons/icons/mute/mute.json',
+    renderer: 'svg',
+    loop: false,
+    autoplay: false,
+    name: 'Mute Animation',
+});
 
-// playAnimation.goToAndStop(14, true);
+playAnimation.goToAndStop(14, true);
 
-// playIconContainer.addEventListener('click', () => {
-//     if(playState === 'play') {
-//         audio.play();
-//         playAnimation.playSegments([14, 27], true);
-//         requestAnimationFrame(whilePlaying);
-//         playState = 'pause';
-//     } else {
-//         audio.pause();
-//         playAnimation.playSegments([0, 14], true);
-//         cancelAnimationFrame(raf);
-//         playState = 'play';
-//     }
-// });
+playIconContainer.addEventListener('click', () => {
+    if (playState === 'play') {
+        audio.play();
+        playAnimation.playSegments([14, 27], true);
+        requestAnimationFrame(whilePlaying);
+        playState = 'pause';
+    } else {
+        audio.pause();
+        playAnimation.playSegments([0, 14], true);
+        cancelAnimationFrame(raf);
+        playState = 'play';
+    }
+});
 
-// muteIconContainer.addEventListener('click', () => {
-//     if(muteState === 'unmute') {
-//         muteAnimation.playSegments([0, 15], true);
-//         audio.muted = true;
-//         muteState = 'mute';
-//     } else {
-//         muteAnimation.playSegments([15, 25], true);
-//         audio.muted = false;
-//         muteState = 'unmute';
-//     }
-// });
+muteIconContainer.addEventListener('click', () => {
+    if (muteState === 'unmute') {
+        muteAnimation.playSegments([0, 15], true);
+        audio.muted = true;
+        muteState = 'mute';
+    } else {
+        muteAnimation.playSegments([15, 25], true);
+        audio.muted = false;
+        muteState = 'unmute';
+    }
+});
 
-// const showRangeProgress = (rangeInput) => {
-//     if(rangeInput === seekSlider) audioPlayerContainer.style.setProperty('--seek-before-width', rangeInput.value / rangeInput.max * 100 + '%');
-//     else audioPlayerContainer.style.setProperty('--volume-before-width', rangeInput.value / rangeInput.max * 100 + '%');
-// }
+const showRangeProgress = (rangeInput) => {
+    if (rangeInput === seekSlider)
+        audioPlayerContainer.style.setProperty('--seek-before-width', (rangeInput.value / rangeInput.max) * 100 + '%');
+    else
+        audioPlayerContainer.style.setProperty(
+            '--volume-before-width',
+            (rangeInput.value / rangeInput.max) * 100 + '%'
+        );
+};
 
-// seekSlider.addEventListener('input', (e) => {
-//     showRangeProgress(e.target);
-// });
-// volumeSlider.addEventListener('input', (e) => {
-//     showRangeProgress(e.target);
-// });
+seekSlider.addEventListener('input', (e) => {
+    showRangeProgress(e.target);
+});
+volumeSlider.addEventListener('input', (e) => {
+    showRangeProgress(e.target);
+});
 
+/** Implementation of the functionality of the audio player */
 
+const audio = document.querySelector('audio');
+const durationContainer = document.getElementById('duration');
+const currentTimeContainer = document.getElementById('current-time');
+const outputContainer = document.getElementById('volume-output');
+let raf = null;
 
+const calculateTime = (secs) => {
+    const minutes = Math.floor(secs / 60);
+    const seconds = Math.floor(secs % 60);
+    const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+    return `${minutes}:${returnedSeconds}`;
+};
 
+const displayDuration = () => {
+    durationContainer.textContent = calculateTime(audio.duration);
+};
 
-// /** Implementation of the functionality of the audio player */
+const setSliderMax = () => {
+    seekSlider.max = Math.floor(audio.duration);
+};
 
-// const audio = document.querySelector('audio');
-// const durationContainer = document.getElementById('duration');
-// const currentTimeContainer = document.getElementById('current-time');
-// const outputContainer = document.getElementById('volume-output');
-// let raf = null;
+const displayBufferedAmount = () => {
+    const bufferedAmount = Math.floor(audio.buffered.end(audio.buffered.length - 1));
+    audioPlayerContainer.style.setProperty('--buffered-width', `${(bufferedAmount / seekSlider.max) * 100}%`);
+};
 
-// const calculateTime = (secs) => {
-//     const minutes = Math.floor(secs / 60);
-//     const seconds = Math.floor(secs % 60);
-//     const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-//     return `${minutes}:${returnedSeconds}`;
-// }
+const whilePlaying = () => {
+    seekSlider.value = Math.floor(audio.currentTime);
+    currentTimeContainer.textContent = calculateTime(seekSlider.value);
+    audioPlayerContainer.style.setProperty('--seek-before-width', `${(seekSlider.value / seekSlider.max) * 100}%`);
+    raf = requestAnimationFrame(whilePlaying);
+};
 
-// const displayDuration = () => {
-//     durationContainer.textContent = calculateTime(audio.duration);
-// }
+if (audio.readyState > 0) {
+    displayDuration();
+    setSliderMax();
+    displayBufferedAmount();
+} else {
+    audio.addEventListener('loadedmetadata', () => {
+        displayDuration();
+        setSliderMax();
+        displayBufferedAmount();
+    });
+}
 
-// const setSliderMax = () => {
-//     seekSlider.max = Math.floor(audio.duration);
-// }
+audio.addEventListener('progress', displayBufferedAmount);
 
-// const displayBufferedAmount = () => {
-//     const bufferedAmount = Math.floor(audio.buffered.end(audio.buffered.length - 1));
-//     audioPlayerContainer.style.setProperty('--buffered-width', `${(bufferedAmount / seekSlider.max) * 100}%`);
-// }
+seekSlider.addEventListener('input', () => {
+    currentTimeContainer.textContent = calculateTime(seekSlider.value);
+    if (!audio.paused) {
+        cancelAnimationFrame(raf);
+    }
+});
 
-// const whilePlaying = () => {
-//     seekSlider.value = Math.floor(audio.currentTime);
-//     currentTimeContainer.textContent = calculateTime(seekSlider.value);
-//     audioPlayerContainer.style.setProperty('--seek-before-width', `${seekSlider.value / seekSlider.max * 100}%`);
-//     raf = requestAnimationFrame(whilePlaying);
-// }
+seekSlider.addEventListener('change', () => {
+    audio.currentTime = seekSlider.value;
+    if (!audio.paused) {
+        requestAnimationFrame(whilePlaying);
+    }
+});
 
-// if (audio.readyState > 0) {
-//     displayDuration();
-//     setSliderMax();
-//     displayBufferedAmount();
-// } else {
-//     audio.addEventListener('loadedmetadata', () => {
-//         displayDuration();
-//         setSliderMax();
-//         displayBufferedAmount();
-//     });
-// }
+volumeSlider.addEventListener('input', (e) => {
+    const value = e.target.value;
 
-// audio.addEventListener('progress', displayBufferedAmount);
-
-// seekSlider.addEventListener('input', () => {
-//     currentTimeContainer.textContent = calculateTime(seekSlider.value);
-//     if(!audio.paused) {
-//         cancelAnimationFrame(raf);
-//     }
-// });
-
-// seekSlider.addEventListener('change', () => {
-//     audio.currentTime = seekSlider.value;
-//     if(!audio.paused) {
-//         requestAnimationFrame(whilePlaying);
-//     }
-// });
-
-// volumeSlider.addEventListener('input', (e) => {
-//     const value = e.target.value;
-
-//     outputContainer.textContent = value;
-//     audio.volume = value / 100;
-// });
+    outputContainer.textContent = value;
+    audio.volume = value / 100;
+});
