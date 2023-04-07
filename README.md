@@ -1,4 +1,4 @@
-# [KARAOKE] SING WITH ME <3 <3
+# [KARAOKE] SING WITH ME <3 <3 <3
 
 ## Introduction
 
